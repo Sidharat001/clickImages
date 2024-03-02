@@ -8,11 +8,43 @@
 </head>
 <body>
 
-<button id="captureBtn">Capture Photo and Save</button>
+<button id="openCameraBtn">Open Camera</button>
+<button id="closeCameraBtn" style="display: none;">Close Camera</button>
+<button id="captureBtn" style="display: none;">Capture Photo and Save</button>
 
-<video id="video" width="400" height="300" autoplay></video>
+<video id="video" width="400" height="300" style="display: none;" autoplay></video>
 
 <script>
+let stream;
+
+// Function to open the camera
+function openCamera() {
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(stream => {
+      const video = document.getElementById('video');
+      video.srcObject = stream;
+      stream = stream;
+      document.getElementById('captureBtn').style.display = 'inline';
+      document.getElementById('closeCameraBtn').style.display = 'inline';
+      document.getElementById('openCameraBtn').style.display = 'none';
+      video.style.display = 'inline';
+    })
+    .catch(error => {
+      console.error('Error accessing camera:', error);
+    });
+}
+
+// Function to close the camera
+function closeCamera() {
+  const video = document.getElementById('video');
+  video.pause();
+  video.srcObject.getTracks().forEach(track => track.stop());
+  document.getElementById('captureBtn').style.display = 'none';
+  document.getElementById('closeCameraBtn').style.display = 'none';
+  document.getElementById('openCameraBtn').style.display = 'inline';
+  video.style.display = 'none';
+}
+
 // Function to capture photo and save
 function capturePhotoAndSave() {
   const video = document.getElementById('video');
@@ -36,18 +68,10 @@ function capturePhotoAndSave() {
   }, 'image/jpeg');
 }
 
-// Add click event listener to capture button
+// Add click event listeners to buttons
+document.getElementById('openCameraBtn').addEventListener('click', openCamera);
+document.getElementById('closeCameraBtn').addEventListener('click', closeCamera);
 document.getElementById('captureBtn').addEventListener('click', capturePhotoAndSave);
-
-// Get access to user's camera
-navigator.mediaDevices.getUserMedia({ video: true })
-  .then(stream => {
-    const video = document.getElementById('video');
-    video.srcObject = stream;
-  })
-  .catch(error => {
-    console.error('Error accessing camera:', error);
-  });
 </script>
 
 </body>
