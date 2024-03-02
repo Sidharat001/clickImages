@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Photo Capture and Save</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+</head>
+<body>
+
+<button id="captureBtn">Capture Photo and Save</button>
+
+<video id="video" width="400" height="300" autoplay></video>
+
+<script>
+// Function to capture photo and save
+function capturePhotoAndSave() {
+  const video = document.getElementById('video');
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('2d');
+
+  // Set canvas dimensions to match video dimensions
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+
+  // Draw current video frame onto the canvas
+  context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  // Convert canvas to blob
+  canvas.toBlob((blob) => {
+    // Create a new file from the blob
+    const file = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
+
+    // Save the file locally using FileSaver.js
+    saveAs(file, 'photo.jpg');
+  }, 'image/jpeg');
+}
+
+// Add click event listener to capture button
+document.getElementById('captureBtn').addEventListener('click', capturePhotoAndSave);
+
+// Get access to user's camera
+navigator.mediaDevices.getUserMedia({ video: true })
+  .then(stream => {
+    const video = document.getElementById('video');
+    video.srcObject = stream;
+  })
+  .catch(error => {
+    console.error('Error accessing camera:', error);
+  });
+</script>
+
+</body>
+</html>
